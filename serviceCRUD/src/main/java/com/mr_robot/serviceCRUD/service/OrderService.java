@@ -10,13 +10,16 @@ import com.mr_robot.serviceCRUD.model.Product;
 import com.mr_robot.serviceCRUD.repository.ClientRepository;
 import com.mr_robot.serviceCRUD.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
@@ -66,9 +69,10 @@ public class OrderService {
         orderRepository.deleteById(id);
     }
 
-    @Transactional
-    public List<OrderDTO> getAllOrder() {
-        return orderRepository.findAll().stream().map(orderMapper::toDTO).collect(Collectors.toList());
+    public Page<OrderDTO> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable)
+                .map(orderMapper::toDTO);
     }
+
 
 }
