@@ -1,10 +1,8 @@
 package com.mr_robot.serviceCRUD.DTO;
 
 
-import com.mr_robot.serviceCRUD.model.Client;
+
 import com.mr_robot.serviceCRUD.model.OrderStatus;
-import com.mr_robot.serviceCRUD.model.Product;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -23,8 +21,8 @@ public class OrderDTO {
     private OrderStatus orderStatus;
 
     @NotNull
-    private Client client;
+    private ClientDTO client;
 
     @NotNull
-    private List<Product> productes;
+    private List<ProductDTO> products;
 }

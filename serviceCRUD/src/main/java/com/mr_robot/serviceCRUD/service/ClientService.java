@@ -1,15 +1,16 @@
 package com.mr_robot.serviceCRUD.service;
 
 import com.mr_robot.serviceCRUD.DTO.ClientDTO;
+import com.mr_robot.serviceCRUD.exception.CustomErrorException;
 import com.mr_robot.serviceCRUD.mapper.ClientMapper;
 import com.mr_robot.serviceCRUD.model.Client;
 import com.mr_robot.serviceCRUD.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,6 +23,12 @@ public class ClientService {
 
 
     public ClientDTO create(ClientDTO clientDTO) {
+        if(clientRepository.existsByEmail(clientDTO.getEmail())){
+            throw new CustomErrorException("Такой email уже существует");
+        }
+        if(clientRepository.existsByPhoneNumber(clientDTO.getPhoneNumber())){
+            throw new CustomErrorException("Такой телефон уже существует");
+        }
         Client client = clientMapper.toEntity(clientDTO);
         Client savedClient = clientRepository.save(client);
         return clientMapper.toDTO(savedClient);
@@ -44,8 +51,8 @@ public class ClientService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClientDTO> getAllClients() {
-        return clientRepository.findAll().stream().map(clientMapper::toDTO).collect(Collectors.toList());
+    public Page<ClientDTO> getAllClients(Pageable pageable) {
+        return clientRepository.findAll(pageable).map(clientMapper::toDTO);
     }
 
 }

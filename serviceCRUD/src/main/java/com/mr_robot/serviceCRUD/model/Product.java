@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "productes")
+@Table(name = "products")
 public class Product {
 
     @Id
@@ -15,7 +15,7 @@ public class Product {
     @GeneratedValue
     private long id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Column(name = "description")

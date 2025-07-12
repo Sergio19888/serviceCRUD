@@ -2,13 +2,16 @@ package com.mr_robot.serviceCRUD.service;
 
 import com.mr_robot.serviceCRUD.DTO.OrderCreateDTO;
 import com.mr_robot.serviceCRUD.DTO.OrderDTO;
+import com.mr_robot.serviceCRUD.mapper.ClientMapper;
 import com.mr_robot.serviceCRUD.mapper.OrderMapper;
+import com.mr_robot.serviceCRUD.mapper.ProductMapper;
 import com.mr_robot.serviceCRUD.model.Client;
 import com.mr_robot.serviceCRUD.model.Order;
 import com.mr_robot.serviceCRUD.model.OrderStatus;
 import com.mr_robot.serviceCRUD.model.Product;
 import com.mr_robot.serviceCRUD.repository.ClientRepository;
 import com.mr_robot.serviceCRUD.repository.OrderRepository;
+import com.mr_robot.serviceCRUD.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +30,11 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final ClientMapper clientMapper;
     private final OrderMapper orderMapper;
+    private final ProductMapper productMapper;
     private final ClientRepository clientRepository;
+    private final ProductRepository productRepository;
 
     public OrderDTO create(OrderCreateDTO request) {
 
@@ -43,7 +49,7 @@ public class OrderService {
         // Создать заказ
         Order order = new Order();
         order.setClient(client);
-        order.setProductes(products);
+        order.setProducts(products);
         order.setDateTime(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.NEW); // или по умолчанию
 
@@ -58,8 +64,8 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("Такого заказа нет"));
         existingOrder.setDateTime(orderDTO.getDateTime());
         existingOrder.setOrderStatus(orderDTO.getOrderStatus());
-        existingOrder.setClient(orderDTO.getClient());
-        existingOrder.setProductes(orderDTO.getProductes());
+        existingOrder.setClient(clientMapper.toEntity(orderDTO.getClient()));
+        existingOrder.setProducts(orderDTO.getProducts().stream().map(productMapper :: toEntity).toList());
         Order updateOrder = orderRepository.save(existingOrder);
 
         return orderMapper.toDTO(updateOrder);
@@ -73,6 +79,5 @@ public class OrderService {
         return orderRepository.findAll(pageable)
                 .map(orderMapper::toDTO);
     }
-
 
 }

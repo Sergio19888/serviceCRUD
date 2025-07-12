@@ -1,14 +1,13 @@
 package com.mr_robot.serviceCRUD.service;
 
 import com.mr_robot.serviceCRUD.DTO.EmployeeDTO;
+import com.mr_robot.serviceCRUD.exception.CustomErrorException;
 import com.mr_robot.serviceCRUD.mapper.EmployeeMapper;
 import com.mr_robot.serviceCRUD.model.Employee;
 import com.mr_robot.serviceCRUD.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +20,9 @@ public class EmployeeService {
     private final EmployeeMapper employeeMapper;
 
     public EmployeeDTO create(EmployeeDTO employeeDTO) {
+        if(employeeRepository.existsByEmail(employeeDTO.getEmail())){
+            throw new CustomErrorException("Такой email уже существует");
+        }
         Employee employee = employeeMapper.toEntity(employeeDTO);
         Employee savedEmployee = employeeRepository.save(employee);
         return employeeMapper.toDTO(savedEmployee);
@@ -50,9 +52,7 @@ public class EmployeeService {
         return employeeMapper.toDTO(pictureEmployee);
     }
 
-    public Page<EmployeeDTO> getAllEmployees(String nameFilter, int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
-
+    public Page<EmployeeDTO> getAllEmployees(String nameFilter, Pageable pageable) {
         Page<Employee> employees;
 
         if (nameFilter != null && !nameFilter.isEmpty()) {
@@ -63,5 +63,6 @@ public class EmployeeService {
 
         return employees.map(employeeMapper::toDTO);
     }
+
 
 }

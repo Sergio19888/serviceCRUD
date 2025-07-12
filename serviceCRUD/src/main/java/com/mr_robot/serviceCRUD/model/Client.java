@@ -16,12 +16,12 @@ public class Client {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "surName")
+    @Column(name = "surName", unique = true)
     private String surName;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "phoneNumber")
+    @Column(name = "phoneNumber", unique = true)
     private String phoneNumber;
 }
