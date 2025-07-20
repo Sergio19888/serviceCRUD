@@ -1,14 +1,18 @@
 package com.mr_robot.serviceCRUD.mapper;
 
 import com.mr_robot.serviceCRUD.DTO.OrderDTO;
+import com.mr_robot.serviceCRUD.DTO.ProductDTO;
 import com.mr_robot.serviceCRUD.model.Order;
+import com.mr_robot.serviceCRUD.model.Product;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-07-12T11:34:57+0300",
+    date = "2025-07-19T14:02:30+0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 17.0.9 (Oracle Corporation)"
 )
 @Component
@@ -16,6 +20,8 @@ public class OrderMapperImpl implements OrderMapper {
 
     @Autowired
     private ClientMapper clientMapper;
+    @Autowired
+    private ProductMapper productMapper;
 
     @Override
     public OrderDTO toDTO(Order order) {
@@ -29,6 +35,7 @@ public class OrderMapperImpl implements OrderMapper {
         orderDTO.setDateTime( order.getDateTime() );
         orderDTO.setOrderStatus( order.getOrderStatus() );
         orderDTO.setClient( clientMapper.toDTO( order.getClient() ) );
+        orderDTO.setProducts( productListToProductDTOList( order.getProducts() ) );
 
         return orderDTO;
     }
@@ -45,7 +52,34 @@ public class OrderMapperImpl implements OrderMapper {
         order.setDateTime( orderDTO.getDateTime() );
         order.setOrderStatus( orderDTO.getOrderStatus() );
         order.setClient( clientMapper.toEntity( orderDTO.getClient() ) );
+        order.setProducts( productDTOListToProductList( orderDTO.getProducts() ) );
 
         return order;
+    }
+
+    protected List<ProductDTO> productListToProductDTOList(List<Product> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<ProductDTO> list1 = new ArrayList<ProductDTO>( list.size() );
+        for ( Product product : list ) {
+            list1.add( productMapper.toDTO( product ) );
+        }
+
+        return list1;
+    }
+
+    protected List<Product> productDTOListToProductList(List<ProductDTO> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<Product> list1 = new ArrayList<Product>( list.size() );
+        for ( ProductDTO productDTO : list ) {
+            list1.add( productMapper.toEntity( productDTO ) );
+        }
+
+        return list1;
     }
 }
